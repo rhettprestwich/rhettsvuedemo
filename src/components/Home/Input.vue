@@ -10,7 +10,7 @@ export default {
 	emits: ['obtainedTweetCount', 'loading'],
 	data() {
 		return {
-			phraseToSearch: 'batman',
+			phraseToSearch: 'Rhett',
 			countResponse: [],
 			tweetCount: null
 		}
