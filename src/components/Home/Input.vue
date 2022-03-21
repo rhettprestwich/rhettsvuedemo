@@ -18,9 +18,13 @@ export default {
 	methods: {
 		getDataClicked() {
 			this.$emit('loading')
-			fetch('https://rhettstwitterpassthrough.azurewebsites.net/api/RhettsPassthrough'
+			var uri = 'https://rhettstwitterpassthrough.azurewebsites.net/api/RhettsPassthrough'
 			+ '?code=0hFu20PmvYhvbGL2OlkxSmBkTDx2T3oPzraYWDOrzx/j98ms1lF29w==&granularity=hour&query="' 
-			+ this.phraseToSearch + '"', {
+			+ encodeURIComponent(this.phraseToSearch) + '"'
+			console.log("URI: " + uri);
+			console.log("encoded URI: " + uri);
+
+			fetch(uri, {
 				method: "GET",
 				headers: {
 					"Accept": "application/json"		
