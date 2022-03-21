@@ -6,7 +6,7 @@
 		<Input @obtainedTweetCount="showData" @loading="loading"/>
 		<Results v-if="showResults" :tweetCount="tweetCounts" :errMessage="errMessage" :timelineData="timelineData" />
 		<p v-if="showLoading">loading</p>
-		<LineChart v-if="showResults" :chartData="chartData" :options="chartOptions" />
+		<LineChart v-if="timelineData" :chartData="chartData" :options="chartOptions" />
 	</div>
 </template>
 
@@ -41,43 +41,46 @@ export default {
 			console.log(timeline);
 			
 			// Get arrays for the chart
-			var startDates = timeline.map((dayInfo) => {
-				return Date.parse(dayInfo.start)
-			})
-			console.log(startDates);
-			var dates = []
+			if(timeline){
+				var startDates = timeline.map((dayInfo) => {
+					return Date.parse(dayInfo.start)
+				})
+				console.log(startDates);
+				var dates = []
 
-			startDates.forEach(startDate => {
-				var date = new Date(startDate).toLocaleString("en-US", this.dateOptions)
-				dates.push(date)
-			})
-			console.log(dates);
+				startDates.forEach(startDate => {
+					var date = new Date(startDate).toLocaleString("en-US", this.dateOptions)
+					dates.push(date)
+				})
+				console.log(dates);
 
-			var tweetNums = timeline.map((dayInfo) => {
-				return dayInfo.tweet_count
-			})
+				var tweetNums = timeline.map((dayInfo) => {
+					return dayInfo.tweet_count
+				})
 
-			this.chartData = {
-				labels: dates,
-				datasets: [
-					{
-						label: 'Tweets',
-						data: tweetNums,
-						borderColor: "#6998AB",
-						backgroundColor: "#6998AB",
-					}
-				]
-			}
-
-			// Set chart Options
-			this.chartOptions = {
-				scales: {
-					x: {
-						ticks: {
-							maxTicksLimit: 21
+				this.chartData = {
+					labels: dates,
+					datasets: [
+						{
+							label: 'Tweets',
+							data: tweetNums,
+							borderColor: "#6998AB",
+							backgroundColor: "#6998AB",
 						}
-					}
-				},
+					]
+				}
+
+				// Set chart Options
+				this.chartOptions = {
+					scales: {
+						x: {
+							ticks: {
+								maxTicksLimit: 21
+							}
+						}
+					},
+				}
+				
 			}
 			
 
@@ -87,6 +90,7 @@ export default {
 			this.errMessage = errMessage
 			this.showLoading = false
 			this.showResults = true
+
 		}
 	}
 }
