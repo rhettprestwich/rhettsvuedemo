@@ -20,6 +20,7 @@ import { Chart, registerables, Utils } from "chart.js";
 Chart.register(...registerables);
 
 export default {
+	title: 'Rhetts Demo',
 	components: { Input, Results, LineChart },
 	data() {
 		return {
