@@ -81,55 +81,6 @@ export default {
 
 			})
 		},
-		getDataClicked() {
-			if(!this.phraseToSearch) {
-				this.$emit('obtainedTweetCount', { score: null, timeline: null,
-				errMessage:'Must enter ...something...' })
-				return
-			}
-			// Get total count.
-			this.$emit('loading')
-			var uri = 'https://rhettstwitterpassthrough.azurewebsites.net/api/RhettsPassthrough'
-			+ '?code=0hFu20PmvYhvbGL2OlkxSmBkTDx2T3oPzraYWDOrzx/j98ms1lF29w==&granularity=hour&query="' 
-			+ encodeURIComponent(this.phraseToSearch) + '"'
-			//console.log("URI: " + uri);
-			//console.log("encoded URI: " + uri);
-
-			fetch(uri, {
-				method: "GET",
-				headers: {
-					"Accept": "application/json"		
-				}
-			})
-			.then((res) => 
-			{
-				if(res.ok){
-					return res.json()	
-				}
-				else{
-					throw Error(response.statusText)
-				}
-			})
-			.then(data => {
-				//console.log("data:")
-				//console.log(data)
-				this.countResponse = data
-				//console.log("countResponse:")
-				//console.log(this.countResponse)
-
-				this.tweetCount = this.countResponse.meta.total_tweet_count
-				//console.log("tweetCount:")
-				//console.log(this.tweetCount)
-				//console.log(this.countResponse.data);
-				//console.log("emiting")
-				this.$emit('obtainedTweetCount', { score:this.tweetCount, timeline:this.countResponse.data, errMessage:null })
-			})
-			.catch(err => {
-				console.log(err.message)
-				this.$emit('obtainedTweetCount', { score: null, timeline: null,
-				errMessage:'Twitter API Error, try a different word. Note: does not work with stop words like "the", "a", etc.' })
-			})
-		},
 	}
 }
 </script>

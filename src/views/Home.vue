@@ -75,6 +75,13 @@ export default {
 					return dayInfo.tweet_count
 				})
 
+				// Remove the first and last data points (they are incomplete).
+				dates.shift()
+				dates.pop()
+				tweetNums.shift() 
+				tweetNums.pop()
+
+
 				this.chartData = {
 					labels: dates,
 					datasets: [
