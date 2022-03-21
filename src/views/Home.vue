@@ -2,7 +2,7 @@
 	<div>
 		<div class="spacer"/>
 		<h1>Tweet Counter</h1>
-		<p>Enter a word or phrase to see how many tweets have been about it in the last week.</p>
+		<p>Enter a word or phrase</p>
 		<Input @obtainedTweetCount="showData" @loading="loading"/>
 		<Results v-if="showResults" :tweetCount="tweetCounts" :errMessage="errMessage" :timelineData="timelineData" />
 		<p v-if="showLoading">loading</p>
