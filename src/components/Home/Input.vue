@@ -17,6 +17,12 @@ export default {
 	},
 	methods: {
 		getDataClicked() {
+			if(!this.phraseToSearch) {
+				this.$emit('obtainedTweetCount', { score: null, timeline: null,
+				errMessage:'Must enter ...something...' })
+				return
+			}
+
 			this.$emit('loading')
 			var uri = 'https://rhettstwitterpassthrough.azurewebsites.net/api/RhettsPassthrough'
 			+ '?code=0hFu20PmvYhvbGL2OlkxSmBkTDx2T3oPzraYWDOrzx/j98ms1lF29w==&granularity=hour&query="' 
