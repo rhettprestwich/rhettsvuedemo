@@ -1,6 +1,5 @@
 <template>
 	<h1 v-if="!errMessage">This has been tweeted {{ tweetCount.toLocaleString("en-US") }} times in the past week</h1>
-	<p v-if='!errMessage'>First Date: {{ new Date(Date.parse(timelineData[0].start)).toLocaleString("en-US", dateOptions) }}</p>
 	<p class="error" v-else>{{ errMessage }}</p>
 </template>
 

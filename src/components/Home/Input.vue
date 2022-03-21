@@ -94,19 +94,15 @@ export default {
 }
 
 .textbox {
-	-moz-border-radius-topleft: 30px;
-	-webkit-border-top-left-radius: 30px;
 	border-top-left-radius: 30px;
-	-moz-border-radius-bottomleft: 30px;
-	-webkit-border-bottom-left-radius: 30px;
 	border-bottom-left-radius: 30px;
+	box-sizing: border-box;
 	border: 1px solid #848484;
-	outline:0;
 	height:50px;
-	width: 500px;
+	max-width: 500px;
+	width: 100%;
 	padding-left:30px;
 	font-size: 20px;
 	vertical-align: middle;
-
 }
 </style>

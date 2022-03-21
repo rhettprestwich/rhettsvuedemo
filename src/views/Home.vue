@@ -1,8 +1,8 @@
 <template>
 	<div>
-		<div class="spacer"/>
-		<h1>Tweet Counter</h1>
-		<p>Enter a word or phrase</p>
+		<div v-if="(isMobile() && !showResults) || !isMobile()" class="spacer"/>
+		<h1 class="title">Tweet Counter</h1>
+		<p class="instructions">Enter a word or phrase</p>
 		<Input @obtainedTweetCount="showData" @loading="loading"/>
 		<Results v-if="showResults" :tweetCount="tweetCounts" :errMessage="errMessage" :timelineData="timelineData" />
 		<p v-if="showLoading">loading</p>
@@ -16,6 +16,7 @@ import Results from '../components/Home/Results.vue'
 import { LineChart } from 'vue-chart-3';
 import { Chart, registerables, Utils } from "chart.js";
 
+
 Chart.register(...registerables);
 
 export default {
@@ -27,9 +28,9 @@ export default {
 			tweetCounts: 0,
 			errMessage: null,
 			timelineData: null,
-			dateOptions: { month: "numeric", day:"numeric", weekday: "short", hour: "numeric" },
 			chartData: null,
-			chartOptions: null
+			chartOptions: null,
+			dateOptions: null
 		}
 	},
 	methods: {
@@ -47,6 +48,13 @@ export default {
 				})
 				console.log(startDates);
 				var dates = []
+
+				if(this.isMobile()) {
+					this.dateOptions = { month: "numeric", day:"numeric", weekday: "short"}
+				}
+				else {
+					this.dateOptions = { month: "numeric", day:"numeric", weekday: "short", hour: "numeric" }
+				}
 
 				startDates.forEach(startDate => {
 					var date = new Date(startDate).toLocaleString("en-US", this.dateOptions)
@@ -71,18 +79,21 @@ export default {
 				}
 
 				// Set chart Options
+				var maxTicks = this.isMobile() ? 7 : 21
+
 				this.chartOptions = {
 					scales: {
 						x: {
 							ticks: {
-								maxTicksLimit: 21
+								maxTicksLimit: maxTicks
 							}
+						},
+						y: {
+							suggestedMin: 0
 						}
 					},
 				}
-				
 			}
-			
 
 			//
 			this.timelineData = timeline
@@ -91,6 +102,14 @@ export default {
 			this.showLoading = false
 			this.showResults = true
 
+		},
+		isMobile() {
+			if(screen.width <= 760) {
+				return true;
+			}
+			else{
+				return false
+			}
 		}
 	}
 }
