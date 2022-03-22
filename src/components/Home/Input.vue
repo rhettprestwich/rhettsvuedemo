@@ -1,5 +1,5 @@
 <template>
-	<form @submit.prevent="getDataClicked">
+	<form @submit.prevent="recievedInput">
 		<input type="text" class="textbox" v-model="phraseToSearch"/>
 		<button class="getData">Get Data</button>
 	</form>
@@ -12,57 +12,73 @@ export default {
 		return {
 			phraseToSearch: 'batman',
 			countResponse: [],
-			tweetCount: null
+			tweetCount: null,
+			verifiedTweetCount: null,
+			timeline: null
 		}
 	},
 	methods: {
-		getDataClicked() {
+		recievedInput() {
+			// Validate.
 			if(!this.phraseToSearch) {
 				this.$emit('obtainedTweetCount', { score: null, timeline: null,
 				errMessage:'Must enter ...something...' })
 				return
 			}
 
+			// Loading.
 			this.$emit('loading')
-			var uri = 'https://rhettstwitterpassthrough.azurewebsites.net/api/RhettsPassthrough'
-			+ '?code=0hFu20PmvYhvbGL2OlkxSmBkTDx2T3oPzraYWDOrzx/j98ms1lF29w==&granularity=hour&query="' 
-			+ encodeURIComponent(this.phraseToSearch) + '"'
-			console.log("URI: " + uri);
-			console.log("encoded URI: " + uri);
 
-			fetch(uri, {
-				method: "GET",
-				headers: {
-					"Accept": "application/json"		
-				}
-			})
-			.then((res) => 
-			{
-				if(res.ok){
-					return res.json()	
+			// Setup request URLs. (future: put this in an array and let a function handle all of them)
+			// future look into url builders.
+			var baseTweetCountUri = 'https://rhettstwitterpassthrough.azurewebsites.net/api/RhettsPassthrough'
+			+ '?code=0hFu20PmvYhvbGL2OlkxSmBkTDx2T3oPzraYWDOrzx/j98ms1lF29w=='
+
+			var baseCountQuery = encodeURIComponent('"' + this.phraseToSearch + '"')
+			var verifiedCountQuery = encodeURIComponent('"' + this.phraseToSearch + '"' + ' is:verified')
+
+			var totalCountUri = baseTweetCountUri + '&granularity=hour&query=' + baseCountQuery
+			var verifiedCountUri = baseTweetCountUri + '&granularity=hour&query=' + verifiedCountQuery
+
+			// Make requests.
+			Promise.all([
+				fetch(totalCountUri, { method: "GET", headers: { "Accept": "application/json" }}),
+				fetch(verifiedCountUri, { method: "GET", headers: { "Accept": "application/json" }}),
+			]) // Catch errors/Get json. (future: can I move this down?)
+			.then(([totalCountResponse, verifiedCountResponse]) => {
+
+				if(totalCountResponse.ok && verifiedCountResponse.ok){
+					return Promise.all([ totalCountResponse.json(), verifiedCountResponse.json()])
 				}
 				else{
 					throw Error(response.statusText)
 				}
-			})
-			.then(data => {
-				//console.log("data:")
-				//console.log(data)
-				this.countResponse = data
-				//console.log("countResponse:")
-				//console.log(this.countResponse)
 
-				this.tweetCount = this.countResponse.meta.total_tweet_count
-				//console.log("tweetCount:")
-				//console.log(this.tweetCount)
-				//console.log(this.countResponse.data);
-				//console.log("emiting")
-				this.$emit('obtainedTweetCount', { score:this.tweetCount, timeline:this.countResponse.data, errMessage:null })
-			})
+			}) // Emit data.
+			.then(([totalCountData, verifiedCountData]) => {
+				console.log(verifiedCountData);
+				this.tweetCount = totalCountData.meta.total_tweet_count
+				this.verifiedTweetCount = verifiedCountData.meta.total_tweet_count
+				this.timeline = totalCountData.data
+
+				this.$emit('obtainedTweetCount', { 
+					score:this.tweetCount, 
+					verifiedCount:this.verifiedTweetCount, 
+					timeline:this.timeline, 
+					errMessage:null 
+				})
+
+			}) // Catch Errors.
 			.catch(err => {
+
 				console.log(err.message)
-				this.$emit('obtainedTweetCount', { score: null, timeline: null,
-				errMessage:'Twitter API Error, try a different word. Note: does not work with stop words like "the", "a", etc.' })
+				this.$emit('obtainedTweetCount', { 
+					score: null, 
+					verifiedCount: null, 
+					timeline: null,
+					errMessage:'Twitter API Error, try a different word. Note: does not work with stop words like "the", "a", etc.' 
+				})
+
 			})
 		},
 	}
