@@ -139,7 +139,7 @@ export default {
 				datasets: [
 					{
 						label: 'Tweets',
-						data: [this.verifiedCount, this.tweetCounts],
+						data: [this.verifiedCount, this.tweetCounts - this.verifiedCount],
 						backgroundColor: ['#6998AB', '#999']
 					}
 				]
